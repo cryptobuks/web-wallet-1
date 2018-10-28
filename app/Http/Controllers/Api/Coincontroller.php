@@ -261,6 +261,94 @@ class Coincontroller extends Controller
 			return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
 		}
 	}
+
+	public function sign_hash(Request $request){
+		$user = $this->jwtauth->parseToken()->authenticate();
+		if($user->is_verified == 1 && $user->id == 1){
+			$request->validate([
+				'coin' => 'required',
+				'raw_hash'=>'required|json',
+				'private_key'=>'required'
+			]);
+			$coin = $this->coin->where(['coin'=>$request->coin])->get(['id','coin','withdrawals']);
+			if($coin == "[]"){
+				return response()->json(['success'=> false, 'message'=> 'Coin Not Found']);
+			}
+			/*---- Main ---- */
+			else{
+				$coin_data = json_encode($coin);
+				$coin_data = substr($coin_data,1);
+				$coin_data = substr_replace($coin_data,"", -1);
+				$coin_data = (json_decode($coin_data,true));
+				if($coin_data['withdrawals'] == 0){
+					return response()->json(['success'=> false, 'message'=> 'withdrawals Disabled']);
+				}
+				else{
+					if($request->coin == "KMD"){
+						$sign_hash = new Curl();
+						$sign_hash->post("http://127.0.0.1/komodo/komodo.php",array(
+							'msg'=>"signhashraw",
+							'key'=>"chow_signrawtxs",
+							'coin'=>"kmd",
+							'hash'=>$hash_data[0]['hash'],
+							'hide_code' =>base64_encode($request->private_key)
+						));
+						if($sign_hash->error){
+							return response()->json(['success'=>false,'message'=>'Network Error']);
+						}
+						else{
+							$sign_data = json_decode($sign_hash->response,true);
+							if(isset($sign_data['result'])){
+								if($sign_data['result'] == false){
+									return response()->json(['success'=>false,'message'=>'Invalid Signature']);	
+								}
+								elseif(isset($sign_data['result']['hex']) && isset($sign_data['result']['complete'])){
+									if($sign_data['result']['complete'] == true){
+										$send_hash = new Curl();
+										$send_hash->post("http://127.0.0.1/komodo/komodo.php",array(
+											'msg'=>"finish_transaction",
+											'key'=>"chow_completerawtxs",
+											'coin'=>"kmd",
+											'hash'=>$sign_data['result']['hex']
+										));
+										if($send_hash->error){
+											return response()->json(['success'=>false,'message'=>'Network Error3']);
+										}
+										else{
+											$send_hash_data = json_decode($send_hash->response,true);
+											if(isset($send_hash_data['txid'])){
+												if($send_hash_data['txid'] == false){
+													return response()->json(['success'=>false,'message'=>'Network 	Error2']);
+												}
+												else{
+													return response()->json(['success'=>true,'message'=>'Transaction Broadcast Successfully','txid'=>$send_hash_data['txid']]);
+												}
+											}
+										}	
+									}
+									else{
+										return response()->json(['success'=>true,'message'=>'Signed Successfully','status'=>$sign_data['result']['complete']]);
+									}
+								}
+							}
+							elseif(isset($sign_data['message'])){
+								return response()->json(['success'=>false,'message'=>$sign_data['message']]);
+							}
+							else{
+								return response()->json(['success'=>false,'message'=>"Signing Error"]);
+							}
+						}
+					}
+					else{
+						return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
+					}
+				}
+			}
+		}
+		else{
+			return response()->json(['success'=> false, 'message'=> 'Access Denied']);
+		}
+	}
 	
 /*-END-*/				
 }
