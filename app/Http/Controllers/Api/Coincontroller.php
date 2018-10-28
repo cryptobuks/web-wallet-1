@@ -248,7 +248,7 @@ class Coincontroller extends Controller
 							}
 						}
 						else{
-							return response()->json(['success'=>false,'message'=>'Invalid Data']);
+							return response()->json(['success'=>false,'message'=>'Invalid Data ..']);
 						}
 					}
 					else{
