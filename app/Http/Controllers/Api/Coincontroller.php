@@ -33,7 +33,7 @@ class Coincontroller extends Controller
 	
 	public function address_generation(Request $request){
 		$user = $this->jwtauth->parseToken()->authenticate();
-		if($user->is_verified == 1 && $user->id == 1)){
+		if($user->is_verified == 1 && $user->id == 1){
 			$request->validate([
 				'coin' => 'required',
 				'userid' => 'required|numeric',
@@ -94,7 +94,7 @@ class Coincontroller extends Controller
 
 	public function online_balance(Request $request){
 		$user = $this->jwtauth->parseToken()->authenticate();
-		if($user->is_verified == 1 && $user->id == 1)){
+		if($user->is_verified == 1 && $user->id == 1){
 			$request->validate([
 				'coin' => 'required'
 			]);
@@ -141,7 +141,7 @@ class Coincontroller extends Controller
 
 	public function offline_balance(Request $request){
 		$user = $this->jwtauth->parseToken()->authenticate();
-		if($user->is_verified == 1 && $user->id == 1)){
+		if($user->is_verified == 1 && $user->id == 1){
 			$request->validate([
 				'coin' => 'required'
 			]);
