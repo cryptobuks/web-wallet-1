@@ -25,6 +25,7 @@ Route::group(['middleware' => ['jwt.auth']], function() {
 	Route::post('get_address', 'Api\Coincontroller@address_generation');
 	Route::post('hot_balance', 'Api\Coincontroller@online_balance');
 	Route::post('cold_balance', 'Api\Coincontroller@offline_balance');
+	Route::post('createraw_hash', 'Api\Coincontroller@create_raw');
 	Route::get('test', function(){
 		return response()->json(['foo'=>'bar']);
 	});
