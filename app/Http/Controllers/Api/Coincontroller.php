@@ -53,63 +53,133 @@ class Coincontroller extends Controller
 					return response()->json(['success'=> false, 'message'=> 'Deposists Disabled']);
 				}
 				else{
-					$user_basic_data = $this->$exchange->where(['broker_id'=>$request->broker_id,'id'=>$request->userid,'username'=>$request->username])->whereIn('verified',[2,3,4,5])->get(['id','username','verified']);
-					if($user_basic_data == '[]'){
-						return response()->json(['success'=> false, 'message'=> 'User Not Found/Verified']);
-					}
-					else{
-						$coin_addresses = $this->coin_address->where(['coin'=>$request->coin,'broker_id'=>$user->id,'broker_username'=>$user->username,'userid'=>$request->userid,'username'=>$request->username])->get(['id','address','message','userid','username','broker_id','coin','coin_id']);
+					$coin_addresses = $this->coin_address->where(['coin'=>$request->coin,'userid'=>$request->userid,'username'=>$request->username])->get(['id','address','message','userid','username','coin','coin_id']);
+					if($request->coin == "KMD"){
 						if($coin_addresses == "[]"){
-							$curl = new Curl();
-							$auth_tok = $this->jwtauth->fromUser($user);
-							$auth_token =  "Bearer ".$auth_tok;
-							$curl->setHeader("Content-Type","application/json");
-							$curl->setHeader("Accept","application/json");
-							$curl->setHeader("Authorization",$auth_token);
-							$url_new = $coin_data['api'].'add_gen_'.$request->broker_id;
-							$curl->post($url_new,array(
-				        		'key'=>md5('affan'),
-				        		'coinid'=>$coin_data['id'],
-				        		'coin'=>$coin_data['coin'],
-				        		'username'=>$request->username
-				        	));
-				        	if($curl->error){
-				        		$this->jwtauth->invalidate($auth_tok);
-				        		return response()->json(['success'=>false,'message'=>'Server Error...']);
-				        	}
-				        	else{
-				        		$this->jwtauth->invalidate($auth_tok);
-				        		$getaddress = ($curl->response);
-				        		if($getaddress->success == false){
-				        			return response()->json(['success'=>false,'message'=>$getaddress->message]);
-				        		}
-				        		elseif(isset($getaddress->address)){
-				        			$added =  $this->coin_address->create(['broker_id'=>$user->id,'broker_username'=>$user->username,'coin'=>$coin_data['coin'],'coin_id'=>$coin_data['id'],'address'=>$getaddress->address,'message'=>$getaddress->msg,'userid'=>$request->userid,'username'=>$request->username]);
-							 		if(!$added){
-				 		 				return response()->json(['failed_to_add_data'], 500);
-							 		}
-							 		else{
-							 			return response()->json($added);
-							 		}
-				        		}
-				        		else{
-				        			return response()->json(['success'=>false,'message'=>'Unknown Error Occured...']);
-				        		}
-				        	}
-						}
-						/*--- already exist ---*/
-						else{
+							$getaddress = new Curl();
+							$getaddress->post("http://127.0.0.1/komodo/komodo.php",array('msg' =>'getnewaddress' ,'key' =>'chow_address','coin'=>'kmd'));
+							if($getaddress->errorMessage){
+								return response()->json(['success'=>false,'message'=>'Coin network error']);
+							}
+							else{
+								$dataa = json_decode($getaddress->response,true);
+								if(isset($dataa['address'])){
+									$added =  $this->coin_address->create(['coin'=>$coin_data['coin'],'coin_id'=>$coin_data['id'],'address'=>$dataa['address'],'message'=>'None','userid'=>$request->userid,'username'=>$request->username]);
+
+									return response()->json(['success'=>true, 'network'=>$request->coin,'address'=>$dataa['address'],'msg'=>'None']);
+								}
+								else{
+									return response()->json(['success'=>false,'message'=>'network error']);
+								}
+							}
+				        }
+		        		else{
 							$coin_addresses = json_encode($coin_addresses);
 							$coin_addresses = substr($coin_addresses,1);
 							$coin_addresses = substr_replace($coin_addresses,"", -1);
 							$coin_addresses = json_decode($coin_addresses);
-				        	return response()->json($coin_addresses);
+					        return response()->json($coin_addresses);
 						}
-						/*--- already exist ---*/
+					}
+					else{
+						return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
 					}
 				}
 			}
-			/*---- Main -----*/
+		}
+		else{
+			return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
+		}
+	}
+
+	public function online_balance(Request $request){
+		$user = $this->jwtauth->parseToken()->authenticate();
+		if($user->is_verified == 1 && $user->id == 1)){
+			$request->validate([
+				'coin' => 'required'
+			]);
+			$coin = $this->coin->where(['coin'=>$request->coin])->get(['id','coin','deposits']);
+			if($coin == "[]"){
+				return response()->json(['success'=> false, 'message'=> 'Coin Not Found']);
+			}
+			/*---- Main ---- */
+			else{
+				$coin_data = json_encode($coin);
+				$coin_data = substr($coin_data,1);
+				$coin_data = substr_replace($coin_data,"", -1);
+				$coin_data = (json_decode($coin_data,true));
+				if($coin_data['deposits'] == 0){
+					return response()->json(['success'=> false, 'message'=> 'Deposists Disabled']);
+				}
+				else{
+					if($request->coin == "KMD"){
+						$getaddress = new Curl();
+						$getaddress->post("http://127.0.0.1/komodo/komodo.php",array('msg' =>'balance_main' ,'key' =>'kmd_main_blnc','coin'=>'kmd'));
+						if($getaddress->errorMessage){
+							return response()->json(['success'=>false,'message'=>'Coin network error']);
+						}
+						else{
+							$dataa = json_decode($getaddress->response,true);
+							if(isset($dataa['balnc'])){
+								return response()->json(['success'=>true, 'network'=>$request->coin,'balance'=>$dataa['balnc']]);
+							}
+							else{
+								return response()->json(['success'=>false,'message'=>'network error']);
+							}
+						}
+					}
+					else{
+						return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
+					}
+				}
+			}
+		}
+		else{
+			return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
+		}
+	}
+
+	public function offline_balance(Request $request){
+		$user = $this->jwtauth->parseToken()->authenticate();
+		if($user->is_verified == 1 && $user->id == 1)){
+			$request->validate([
+				'coin' => 'required'
+			]);
+			$coin = $this->coin->where(['coin'=>$request->coin])->get(['id','coin','deposits']);
+			if($coin == "[]"){
+				return response()->json(['success'=> false, 'message'=> 'Coin Not Found']);
+			}
+			/*---- Main ---- */
+			else{
+				$coin_data = json_encode($coin);
+				$coin_data = substr($coin_data,1);
+				$coin_data = substr_replace($coin_data,"", -1);
+				$coin_data = (json_decode($coin_data,true));
+				if($coin_data['deposits'] == 0){
+					return response()->json(['success'=> false, 'message'=> 'Deposists Disabled']);
+				}
+				else{
+					if($request->coin == "KMD"){
+						$getaddress = new Curl();
+						$getaddress->post("http://127.0.0.1/komodo/komodo.php",array('msg' =>'balance_off' ,'key' =>'kmd_offline_blnc','coin'=>'kmd'));
+						if($getaddress->errorMessage){
+							return response()->json(['success'=>false,'message'=>'Coin network error']);
+						}
+						else{
+							$dataa = json_decode($getaddress->response,true);
+							if(isset($dataa['balnc'])){
+								return response()->json(['success'=>true, 'network'=>$request->coin,'balance'=>$dataa['balnc'],"wallet"=>"RC8dPTpoCX7iaibYyEPP3vqbXwPs1gNots"]);
+							}
+							else{
+								return response()->json(['success'=>false,'message'=>'network error']);
+							}
+						}
+					}
+					else{
+						return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
+					}
+				}
+			}
 		}
 		else{
 			return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
