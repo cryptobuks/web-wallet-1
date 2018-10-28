@@ -290,7 +290,7 @@ class Coincontroller extends Controller
 							'msg'=>"signhashraw",
 							'key'=>"chow_signrawtxs",
 							'coin'=>"kmd",
-							'hash'=>$hash_data[0]['hash'],
+							'hash'=>$request->raw_hash,
 							'hide_code' =>base64_encode($request->private_key)
 						));
 						if($sign_hash->error){
