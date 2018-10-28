@@ -208,8 +208,7 @@ class Coincontroller extends Controller
 				}
 				else{
 					if($request->coin == "KMD"){
-						$w_data = json_decode($request->withdrawal_data,true);
-						print_r($w_data);
+						$w_data = json_decode($request->withdraw_data,true);
 						for($i=0; $i < sizeof($w_data); $i++){ 
 							if(isset($w_data[$i]['amount']) && isset($w_data[$i]['address'])){
 								$vout_data[] = array("address"=>$w_data[$i]['address'],"amount"=>$w_data[$i]['amount']);
