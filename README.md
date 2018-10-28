@@ -1,3 +1,3 @@
-# Laravel JWT Authentication
+# Web Wallet
 
-> Simple App For Restful API's
+> Komodo Wallet API's
