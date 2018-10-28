@@ -77,7 +77,7 @@ class Coincontroller extends Controller
 							$coin_addresses = json_encode($coin_addresses);
 							$coin_addresses = substr($coin_addresses,1);
 							$coin_addresses = substr_replace($coin_addresses,"", -1);
-							$coin_addresses = json_decode($coin_addresses);
+							$coin_addresses = json_decode($coin_addresses,true);
 					        return response()->json(['success'=>true,"network"=>$request->coin,"address"=>$coin_addresses["address"],"msg"=>'None']);
 						}
 					}
