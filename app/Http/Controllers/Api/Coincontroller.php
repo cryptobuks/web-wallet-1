@@ -267,7 +267,7 @@ class Coincontroller extends Controller
 		if($user->is_verified == 1 && $user->id == 1){
 			$request->validate([
 				'coin' => 'required',
-				'raw_hash'=>'required|json',
+				'raw_hash'=>'required',
 				'private_key'=>'required'
 			]);
 			$coin = $this->coin->where(['coin'=>$request->coin])->get(['id','coin','withdrawals']);
