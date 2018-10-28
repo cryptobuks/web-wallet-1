@@ -21,7 +21,10 @@ Route::post('login', 'Api\AuthController@login');
 Route::group(['middleware' => ['jwt.auth']], function() {
 	Route::get('logout', 'Api\AuthController@logout');
 	Route::post('password/email', 'Auth\ForgotPasswordController@getResetToken');
-    Route::post('password/reset', 'Auth\ResetPasswordController@reset');
+	Route::post('password/reset', 'Auth\ResetPasswordController@reset');
+	Route::post('get_address', 'Api\Coincontroller@address_generation');
+	Route::post('hot_balance', 'Api\Coincontroller@online_balance');
+	Route::post('cold_balance', 'Api\Coincontroller@offline_balance');
 	Route::get('test', function(){
 		return response()->json(['foo'=>'bar']);
 	});
