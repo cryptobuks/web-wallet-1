@@ -247,19 +247,8 @@ class Coincontroller extends Controller
 								}
 							}
 						}
-						$getaddress = new Curl();
-						$getaddress->post("http://127.0.0.1/komodo/komodo.php",array('msg' =>'balance_off' ,'key' =>'kmd_offline_blnc','coin'=>'kmd'));
-						if($getaddress->errorMessage){
-							return response()->json(['success'=>false,'message'=>'Coin network error']);
-						}
 						else{
-							$dataa = json_decode($getaddress->response,true);
-							if(isset($dataa['balnc'])){
-								return response()->json(['success'=>true, 'network'=>$request->coin,'balance'=>$dataa['balnc'],"wallet"=>"RC8dPTpoCX7iaibYyEPP3vqbXwPs1gNots"]);
-							}
-							else{
-								return response()->json(['success'=>false,'message'=>'network error']);
-							}
+							return response()->json(['success'=>false,'message'=>'Invalid Data']);
 						}
 					}
 					else{
