@@ -218,7 +218,7 @@ class Coincontroller extends Controller
 									"msg"=>"validateaddress",
 									"key"=>"chow_validate",
 									"coin"=>"kmd",
-									"address"=>$request->address
+									"address"=>$w_data[$i]['address']
 								));
 								if($validate_address->error){
 									return response()->json(['success'=>false,'message'=>'Coin network error']);
