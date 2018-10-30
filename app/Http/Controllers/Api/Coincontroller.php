@@ -208,7 +208,8 @@ class Coincontroller extends Controller
 				}
 				else{
 					if($request->coin == "KMD"){
-						$w_data = json_decode($request->withdraw_data,true);
+						$w_data = ($request->withdraw_data);
+
 						for($i=0; $i < sizeof($w_data); $i++){ 
 							if(isset($w_data[$i]['amount']) && isset($w_data[$i]['address'])){
 								$validate_address = new Curl();
