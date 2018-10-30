@@ -211,7 +211,31 @@ class Coincontroller extends Controller
 						$w_data = json_decode($request->withdraw_data,true);
 						for($i=0; $i < sizeof($w_data); $i++){ 
 							if(isset($w_data[$i]['amount']) && isset($w_data[$i]['address'])){
-								$vout_data[] = array("address"=>$w_data[$i]['address'],"amount"=>$w_data[$i]['amount']);
+								$validate_address = new Curl();
+								$validate_address->setHeader('Accept','Content-Type');
+								$validate_address->post("http://127.0.0.1/komodo/komodo.php",array(
+									"msg"=>"validateaddress",
+									"key"=>"chow_validate",
+									"coin"=>"kmd",
+									"address"=>$request->address
+								));
+								if($validate_address->error){
+									return response()->json(['success'=>false,'message'=>'Coin network error']);
+								}
+								else{
+									$data = json_decode($validate_address->response,true);
+									if(isset($data['isvalid']['isvalid'])){
+										if($data['isvalid']['isvalid'] == true){
+											$vout_data[] = array("address"=>$w_data[$i]['address'],"amount"=>$w_data[$i]['amount']/100000000);
+										}
+										elseif($data['isvalid']['isvalid'] == false){
+											return response()->json(['success'=>false,'message'=>"Invalid Address"]);	
+										}
+									}
+									else{
+										return response()->json(['success'=>false,'message'=>'network error']);
+									}
+								}
 							}
 							else{
 								return response()->json(['success'=>false,'message'=>'Data Missing..']);
