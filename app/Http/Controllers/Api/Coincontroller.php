@@ -342,8 +342,9 @@ class Coincontroller extends Controller
 										else{
 											$send_hash_data = json_decode($send_hash->response,true);
 											if(isset($send_hash_data['txid'])){
+												print_r($send_hash_data)
 												if($send_hash_data['txid'] == false){
-													return response()->json(['success'=>false,'message'=>'Network 	Error2']);
+													return response()->json(['success'=>false,'message'=>'Network Error2']);
 												}
 												else{
 													return response()->json(['success'=>true,'message'=>'Transaction Broadcast Successfully','txid'=>$send_hash_data['txid']]);
