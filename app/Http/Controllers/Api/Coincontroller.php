@@ -140,7 +140,7 @@ class Coincontroller extends Controller
 			$request->validate([
 				'coin' => 'required'
 			]);
-			$coin = $this->coin->where(['coin'=>$request->coin])->get(['id','coin']);
+			$coin = $this->coin->where(['coin'=>$request->coin])->get(['id','coin','withdraw_fees','confirmations','min_withdraw']);
 			if($coin == "[]"){
 				return response()->json(['success'=> false, 'message'=> 'Coin Not Found']);
 			}
