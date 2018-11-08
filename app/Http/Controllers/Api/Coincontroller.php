@@ -134,32 +134,6 @@ class Coincontroller extends Controller
 		}
 	}
 
-	public function coin_data(Request $request){
-		$user = $this->jwtauth->parseToken()->authenticate();
-		if($user->is_verified == 1 && $user->id == 1){
-			$request->validate([
-				'coin' => 'required'
-			]);
-			$coin = $this->coin->where(['coin'=>$request->coin])->get(['id','coin','withdraw_fees','confirmations','min_withdraw']);
-			if($coin == "[]"){
-				return response()->json(['success'=> false, 'message'=> 'Coin Not Found']);
-			}
-			/*---- Main ---- */
-			else{
-				$coin_data = json_decode($coin,true);
-				if($request->coin == "KMD"){
-					return response()->json(['success'=>true,'coin'=>'KMD','fees'=>$coin_data[0]['withdraw_fees'],'confirmations'=>$coin_data[0]['confirmations'],'min_withdraw'=>$coin_data[0]['min_withdraw']]);
-				}
-				else{
-					return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
-				}
-			}
-		}
-		else{
-			return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
-		}
-	}
-
 	public function online_balance(Request $request){
 		$user = $this->jwtauth->parseToken()->authenticate();
 		if($user->is_verified == 1 && $user->id == 1){
@@ -442,6 +416,77 @@ class Coincontroller extends Controller
 			return response()->json(['success'=> false, 'message'=> 'Access Denied']);
 		}
 	}
+
+	public function coin_data(Request $request){
+		$user = $this->jwtauth->parseToken()->authenticate();
+		if($user->is_verified == 1 && $user->id == 1){
+			$request->validate([
+				'coin' => 'required'
+			]);
+			$coin = $this->coin->where(['coin'=>$request->coin])->get(['id','coin','withdraw_fees','confirmations','min_withdraw']);
+			if($coin == "[]"){
+				return response()->json(['success'=> false, 'message'=> 'Coin Not Found']);
+			}
+			/*---- Main ---- */
+			else{
+				$coin_data = json_decode($coin,true);
+				if($request->coin == "KMD"){
+					return response()->json(['success'=>true,'coin'=>'KMD','fees'=>$coin_data[0]['withdraw_fees'],'confirmations'=>$coin_data[0]['confirmations'],'min_withdraw'=>$coin_data[0]['min_withdraw']]);
+				}
+				else{
+					return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
+				}
+			}
+		}
+		else{
+			return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
+		}
+	}
+
+	public function coin_data_update(Request $request){
+		$user = $this->jwtauth->parseToken()->authenticate();
+		if($user->is_verified == 1 && $user->id == 1){
+			$request->validate([
+				'coin' => 'required',
+				'message'=>'required|numeric|max:5',
+				'network_fees'=>'required_if:message,1|required_if:message,4'
+				'confirmations'=>'required_if:message,2|required_if:message,4'
+				'min_withdraw'=>'required_if:message,3|required_if:message,4'
+			]);
+			$coin = $this->coin->where(['coin'=>$request->coin])->get(['id','coin']);
+			if($coin == "[]"){
+				return response()->json(['success'=> false, 'message'=> 'Coin Not Found']);
+			}
+			/*---- Main ---- */
+			else{
+				$coin_data = json_decode($coin,true);
+				if($request->coin == "KMD"){
+					if($request->message == 1){
+
+					}
+					elseif($request->message == 2){
+
+					}
+					elseif($request->message == 3){
+
+					}
+					elseif($request->message == 4){
+
+					}
+					else{
+						return response()->json(['success'=> false, 'message'=> 'Invalid Message Code']);
+					}
+				}
+				else{
+					return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
+				}
+			}
+		}
+		else{
+			return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
+		}
+	}
+
 	
 /*-END-*/				
 }
