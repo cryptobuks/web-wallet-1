@@ -450,8 +450,8 @@ class Coincontroller extends Controller
 				'coin' => 'required',
 				'message'=>'required|numeric|max:5',
 				'network_fees'=>'required_if:message,1|required_if:message,4|numeric',
-				'confirmations'=>'required_if:message,2|required_if:message,4',
-				'min_withdraw'=>'required_if:message,3|required_if:message,4'
+				'confirmations'=>'required_if:message,2|required_if:message,4|numeric',
+				'min_withdraw'=>'required_if:message,3|required_if:message,4|numeric'
 			]);
 			$coin = $this->coin->where(['coin'=>$request->coin])->get(['id','coin']);
 			if($coin == "[]"){
