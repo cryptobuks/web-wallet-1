@@ -30,6 +30,7 @@ Route::group(['middleware' => ['jwt.auth']], function() {
 
 	/*- Admiin -*/
 	Route::post('coin_details', 'Api\Coincontroller@coin_data');
+	Route::post('coin_balance', 'Api\Coincontroller@all_balance');
 
 	Route::get('test', function(){
 		return response()->json(['foo'=>'bar']);
