@@ -116,8 +116,8 @@ class Coincontroller extends Controller
 					}
 					else{
 						$dataa = json_decode($getaddress->response,true);
-						if(isset($dataa['balnc'])){
-							return response()->json(['success'=>true, 'network'=>$request->coin,'balance'=>$dataa['balnc']]);
+						if(isset($dataa['msig']) && isset($dataa['hot']) && isset($dataa['cold'])){
+							return response()->json(['success'=>true, 'network'=>$request->coin,'withdraw_wallet'=>$dataa['msig'],'cold'=>$dataa['cold'],'hot'=>$dataa['hot']]);
 						}
 						else{
 							return response()->json(['success'=>false,'message'=>'network error']);
