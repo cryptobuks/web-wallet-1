@@ -147,9 +147,8 @@ class Coincontroller extends Controller
 			/*---- Main ---- */
 			else{
 				$coin_data = json_decode($coin,true);
-				print_r($coin_data);
 				if($request->coin == "KMD"){
-					return response()->json(['success'=>true,'coin'=>'KMD','fees'=>$coin_data['withdraw_fees'],'confirmations'=>$coin_data['confirmations'],'min_withdraw'=>$coin_data['min_withdraw']]);
+					return response()->json(['success'=>true,'coin'=>'KMD','fees'=>$coin_data[0]['withdraw_fees'],'confirmations'=>$coin_data[0]['confirmations'],'min_withdraw'=>$coin_data[0]['min_withdraw']]);
 				}
 				else{
 					return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
