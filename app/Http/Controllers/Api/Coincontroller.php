@@ -449,7 +449,7 @@ class Coincontroller extends Controller
 			$request->validate([
 				'coin' => 'required',
 				'message'=>'required|numeric|max:5',
-				'network_fees'=>'required_if:message,1|required_if:message,4'
+				'network_fees'=>'required_if:message,1|required_if:message,4|numeric'
 				'confirmations'=>'required_if:message,2|required_if:message,4'
 				'min_withdraw'=>'required_if:message,3|required_if:message,4'
 			]);
@@ -462,16 +462,40 @@ class Coincontroller extends Controller
 				$coin_data = json_decode($coin,true);
 				if($request->coin == "KMD"){
 					if($request->message == 1){
-
+						$coin_update = $this->coin->where(['coin'=>$coin_data[0]['coin'],'id'=>$coin_data[0]['id']])->update(['withdraw_fees'=>$request->network_fees]);
+						if(!$coin_update){
+							return response()->json(['success'=> false, 'error'=> 'Update Failed']);
+						}
+						else{
+							return response()->json(['success'=> true, 'message'=> 'Successfully Updated']);
+						}
 					}
 					elseif($request->message == 2){
-
+						$coin_update = $this->coin->where(['coin'=>$coin_data[0]['coin'],'id'=>$coin_data[0]['id']])->update(['confirmations'=>$request->confirmations]);
+						if(!$coin_update){
+							return response()->json(['success'=> false, 'error'=> 'Update Failed']);
+						}
+						else{
+							return response()->json(['success'=> true, 'message'=> 'Successfully Updated']);
+						}
 					}
 					elseif($request->message == 3){
-
+						$coin_update = $this->coin->where(['coin'=>$coin_data[0]['coin'],'id'=>$coin_data[0]['id']])->update(['min_withdraw'=>$request->min_withdraw]);
+						if(!$coin_update){
+							return response()->json(['success'=> false, 'error'=> 'Update Failed']);
+						}
+						else{
+							return response()->json(['success'=> true, 'message'=> 'Successfully Updated']);
+						}
 					}
 					elseif($request->message == 4){
-
+						$coin_update = $this->coin->where(['coin'=>$coin_data[0]['coin'],'id'=>$coin_data[0]['id']])->update(['withdraw_fees'=>$request->network_fees,'confirmations'=>$request->confirmations,'min_withdraw'=>$request->min_withdraw]);
+						if(!$coin_update){
+							return response()->json(['success'=> false, 'error'=> 'Update Failed']);
+						}
+						else{
+							return response()->json(['success'=> true, 'message'=> 'Successfully Updated']);
+						}
 					}
 					else{
 						return response()->json(['success'=> false, 'message'=> 'Invalid Message Code']);
