@@ -134,6 +134,32 @@ class Coincontroller extends Controller
 		}
 	}
 
+	public function coin_data(Request $request){
+		$user = $this->jwtauth->parseToken()->authenticate();
+		if($user->is_verified == 1 && $user->id == 1){
+			$request->validate([
+				'coin' => 'required'
+			]);
+			$coin = $this->coin->where(['coin'=>$request->coin])->get(['id','coin']);
+			if($coin == "[]"){
+				return response()->json(['success'=> false, 'message'=> 'Coin Not Found']);
+			}
+			/*---- Main ---- */
+			else{
+				$coin_data = json_decode($coin_data,true);
+				if($request->coin == "KMD"){
+					return response()->json(['success'=>true,'coin'=>'KMD','fees'=>$coin_data['withdraw_fees'],'confirmations'=>$coin_data['confirmations'],'min_withdraw'=>$coin_data['min_withdraw']]);
+				}
+				else{
+					return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
+				}
+			}
+		}
+		else{
+			return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
+		}
+	}
+
 	public function online_balance(Request $request){
 		$user = $this->jwtauth->parseToken()->authenticate();
 		if($user->is_verified == 1 && $user->id == 1){
