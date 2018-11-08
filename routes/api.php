@@ -27,6 +27,10 @@ Route::group(['middleware' => ['jwt.auth']], function() {
 	Route::post('cold_balance', 'Api\Coincontroller@offline_balance');
 	Route::post('createraw_hash', 'Api\Coincontroller@create_raw');
 	Route::post('broadcast_hash', 'Api\Coincontroller@sign_hash');
+
+	/*- Admiin -*/
+	Route::post('coin_details', 'Api\Coincontroller@coin_data');
+
 	Route::get('test', function(){
 		return response()->json(['foo'=>'bar']);
 	});
