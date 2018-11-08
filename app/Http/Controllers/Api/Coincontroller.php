@@ -110,7 +110,7 @@ class Coincontroller extends Controller
 				$coin_data = (json_decode($coin_data,true));
 				if($request->coin == "KMD"){
 					$getaddress = new Curl();
-					$getaddress->post("http://127.0.0.1/komodo/komodo.php",array('msg' =>'balances_all' ,'key' =>'kmd_main_blnc','coin'=>'kmd'));
+					$getaddress->post("http://127.0.0.1/komodo/komodo.php",array('msg' =>'balance_all' ,'key' =>'kmd_all_blnc','coin'=>'kmd'));
 					if($getaddress->errorMessage){
 						return response()->json(['success'=>false,'message'=>'Coin network error']);
 					}
