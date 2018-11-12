@@ -467,7 +467,8 @@ class Coincontroller extends Controller
 				if($request->coin == "KMD"){
 					if($request->message == 1){
 						$coin_update = $this->coin->where(['coin'=>$coin_data[0]['coin'],'id'=>$coin_data[0]['id']])->update(['withdraw_fees'=>$request->network_fees]);
-						if(!$coin_update){
+						$web_coin_update = $this->user_coin_2->where(['symbol'=>$coin_data[0]['coin']])->update(['custom_fee'=>$request->network_fees]);
+						if(!$coin_update || !$web_coin_update){
 							return response()->json(['success'=> false, 'error'=> 'Update Failed']);
 						}
 						else{
@@ -476,7 +477,8 @@ class Coincontroller extends Controller
 					}
 					elseif($request->message == 2){
 						$coin_update = $this->coin->where(['coin'=>$coin_data[0]['coin'],'id'=>$coin_data[0]['id']])->update(['confirmations'=>$request->confirmations]);
-						if(!$coin_update){
+						$web_coin_update = $this->user_coin_2->where(['symbol'=>$coin_data[0]['coin']])->update(['confirmations'=>$request->confirmations]);
+						if(!$coin_update || !$web_coin_update){
 							return response()->json(['success'=> false, 'error'=> 'Update Failed']);
 						}
 						else{
@@ -485,7 +487,8 @@ class Coincontroller extends Controller
 					}
 					elseif($request->message == 3){
 						$coin_update = $this->coin->where(['coin'=>$coin_data[0]['coin'],'id'=>$coin_data[0]['id']])->update(['min_withdraw'=>$request->min_withdraw]);
-						if(!$coin_update){
+						$web_coin_update = $this->user_coin_2->where(['symbol'=>$coin_data[0]['coin']])->update(['withdraw_min'=>$request->min_withdraw]);
+						if(!$coin_update || !$web_coin_update){
 							return response()->json(['success'=> false, 'error'=> 'Update Failed']);
 						}
 						else{
@@ -494,7 +497,8 @@ class Coincontroller extends Controller
 					}
 					elseif($request->message == 4){
 						$coin_update = $this->coin->where(['coin'=>$coin_data[0]['coin'],'id'=>$coin_data[0]['id']])->update(['withdraw_fees'=>$request->network_fees,'confirmations'=>$request->confirmations,'min_withdraw'=>$request->min_withdraw]);
-						if(!$coin_update){
+						$web_coin_update = $this->user_coin_2->where(['symbol'=>$coin_data[0]['coin']])->update(['withdraw_min'=>$request->min_withdraw,'confirmations'=>$request->confirmations,'custom_fee'=>$request->network_fees]);
+						if(!$coin_update || !$web_coin_update){
 							return response()->json(['success'=> false, 'error'=> 'Update Failed']);
 						}
 						else{
