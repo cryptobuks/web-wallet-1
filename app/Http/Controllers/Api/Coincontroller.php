@@ -7,7 +7,7 @@ use App\User;
 use App\Broker;
 use App\Coin;
 use App\Coin_address;
-use App\Users_2;
+use App\User_coin_2;
 use App\Http\Requests;
 use Tymon\JWTAuth\JWTAuth;
 use App\Http\Controllers\Controller;
@@ -20,13 +20,15 @@ class Coincontroller extends Controller
     //
   private $user;
   private $coin;
+  private $user_coin_2;
   private $coin_address;
   private $jwtauth;
 
-  public function __construct(User $user, JWTAuth $jwtauth, Coin_address $coin_address, Coin $coin){
+  public function __construct(User $user, JWTAuth $jwtauth, Coin_address $coin_address, Coin $coin, User_coin_2 $user_coin_2){
 	$this->user = $user;
 	$this->jwtauth = $jwtauth;
 	$this->coin = $coin;
+	$this->user_coin_2 = $user_coin_2;
 	$this->coin_address = $coin_address;
 }
 
@@ -424,7 +426,8 @@ class Coincontroller extends Controller
 				'coin' => 'required'
 			]);
 			$coin = $this->coin->where(['coin'=>$request->coin])->get(['id','coin','withdraw_fees','confirmations','min_withdraw']);
-			if($coin == "[]"){
+			$web_coin = $this->user_coin_2->where(['symbol'=>$request->coin])->get(['id']);
+			if($coin == "[]" || $web_coin == "[]"){
 				return response()->json(['success'=> false, 'message'=> 'Coin Not Found']);
 			}
 			/*---- Main ---- */
@@ -454,7 +457,8 @@ class Coincontroller extends Controller
 				'min_withdraw'=>'required_if:message,3|required_if:message,4|numeric'
 			]);
 			$coin = $this->coin->where(['coin'=>$request->coin])->get(['id','coin']);
-			if($coin == "[]"){
+			$web_coin = $this->user_coin_2->where(['symbol'=>$request->coin])->get(['id']);
+			if($coin == "[]" || $web_coin == "[]"){
 				return response()->json(['success'=> false, 'message'=> 'Coin Not Found']);
 			}
 			/*---- Main ---- */
