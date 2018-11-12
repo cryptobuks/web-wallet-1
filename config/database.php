@@ -55,6 +55,22 @@ return [
             'engine' => null,
         ],
 
+        'mysql1' => [
+            'driver' => 'mysql',
+            'host' => '206.189.47.11',
+            'port' => '3306',
+            'database' => 'pp_webw',
+            'username' => 'wallet_user',
+            'password' => env('DB_PASSWORD1', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8',
+            'collation' => 'utf8_general_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'host' => env('DB_HOST', '127.0.0.1'),
