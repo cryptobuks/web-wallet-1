@@ -91,7 +91,8 @@ class Depositscontroller extends Controller
 								}
 								if(isset($post_data) && is_array($post_data)){
 									$add_block = $this->block_hash->where(['coin'=>'KMD'])->update(['blockhash' =>$txs['data']['lastblock']]);
-									return response()->json(['success'=>true,'data'=>$post_data]);
+									$dep = $this->receive_deposits(1,'KMD',json_encode($post_data),md5('access_send_deposits'));
+									return response()->json(['success'=>true,'data'=>$post_data,'return'=>$dep]);
 								}
 								else{
 									$add_block = $this->block_hash->where(['coin'=>'KMD'])->update(['blockhash' =>$txs['data']['lastblock']]);
@@ -137,53 +138,54 @@ class Depositscontroller extends Controller
 						}
 
 						/*-- Insert Tx --*/
-						if($deposit == "[]"){
-							$added = $this->deposit->create(['coin_id'=>$coin_exist[0]->id,'coin'=>$data_json_deposits[$i]['coin'],'broker_id'=>$data_json_deposits[$i]['broker_id'],'userid'=>$userid_d,'username'=>$username_d,'address'=>$data_json_deposits[$i]['address'],'category'=>'receive','amount'=>$data_json_deposits[$i]['amount'],'confirmations'=>$data_json_deposits[$i]['confirmations'],'txid'=>$data_json_deposits[$i]['txid'],'message'=>$data_json_deposits[$i]['message']]);
-							if (!$added) {
-								echo 'error';
-							}
-							else{
-									/** --- websend --- **/
-								$data_json =  json_encode([$added,'status'=>'new']);
-								echo $data_json;
-								$status =  $this->posting($api_url,$api_key,$broker_replacer[$broker_username],$data_json);
-								//print_r($status);
-								//echo $api_url;
-								if($status == false){
-									//print_r($status);
-									$update_status = $this->deposit->where(['coin_id'=>$coin_exist[0]->id,'broker_id'=>$data_json_deposits[$i]['broker_id'],'address'=>$data_json_deposits[$i]['address'],'category'=>'receive','txid'=>$data_json_deposits[$i]['txid']])->update(['status'=>-1]);
-								}
-								else{
-									//print_r($status);
-									$update_status = $this->deposit->where(['coin_id'=>$coin_exist[0]->id,'broker_id'=>$data_json_deposits[$i]['broker_id'],'address'=>$data_json_deposits[$i]['address'],'category'=>'receive','amount'=>$data_json_deposits[$i]['amount'],'txid'=>$data_json_deposits[$i]['txid']])->update(['status'=>1]);
-								}
-								/** --- websend --- **/
-							}
-						}
+						return json_encode(array('coin_id'=>$coin_exist[0]->id,'coin'=>$data_json_deposits[$i]['coin'],'broker_id'=>$data_json_deposits[$i]['broker_id'],'userid'=>$userid_d,'username'=>$username_d,'address'=>$data_json_deposits[$i]['address'],'category'=>'receive','amount'=>$data_json_deposits[$i]['amount'],'confirmations'=>$data_json_deposits[$i]['confirmations'],'txid'=>$data_json_deposits[$i]['txid'],'message'=>$data_json_deposits[$i]['message']));
+						// if($deposit == "[]"){
+						// 	$added = $this->deposit->create(['coin_id'=>$coin_exist[0]->id,'coin'=>$data_json_deposits[$i]['coin'],'broker_id'=>$data_json_deposits[$i]['broker_id'],'userid'=>$userid_d,'username'=>$username_d,'address'=>$data_json_deposits[$i]['address'],'category'=>'receive','amount'=>$data_json_deposits[$i]['amount'],'confirmations'=>$data_json_deposits[$i]['confirmations'],'txid'=>$data_json_deposits[$i]['txid'],'message'=>$data_json_deposits[$i]['message']]);
+						// 	if (!$added) {
+						// 		echo 'error';
+						// 	}
+						// 	else{
+						// 			/** --- websend --- **/
+						// 		$data_json =  json_encode([$added,'status'=>'new']);
+						// 		echo $data_json;
+						// 		$status =  $this->posting($api_url,$api_key,$broker_replacer[$broker_username],$data_json);
+						// 		//print_r($status);
+						// 		//echo $api_url;
+						// 		if($status == false){
+						// 			//print_r($status);
+						// 			$update_status = $this->deposit->where(['coin_id'=>$coin_exist[0]->id,'broker_id'=>$data_json_deposits[$i]['broker_id'],'address'=>$data_json_deposits[$i]['address'],'category'=>'receive','txid'=>$data_json_deposits[$i]['txid']])->update(['status'=>-1]);
+						// 		}
+						// 		else{
+						// 			//print_r($status);
+						// 			$update_status = $this->deposit->where(['coin_id'=>$coin_exist[0]->id,'broker_id'=>$data_json_deposits[$i]['broker_id'],'address'=>$data_json_deposits[$i]['address'],'category'=>'receive','amount'=>$data_json_deposits[$i]['amount'],'txid'=>$data_json_deposits[$i]['txid']])->update(['status'=>1]);
+						// 		}
+						// 		/** --- websend --- **/
+						// 	}
+						// }
 						/*-- Insert Tx End--*/
 
 						/*-- Update Tx --*/
-						else{
-							$updated = $this->deposit->where(['coin_id'=>$coin_exist[0]->id,'broker_id'=>$data_json_deposits[$i]['broker_id'],'txid'=>$data_json_deposits[$i]['txid'],'address'=>$data_json_deposits[$i]['address']])->update(['confirmations'=>$data_json_deposits[$i]['confirmations']]);
-							if(!$updated){
-								echo "error";
-							}
-							else{	
-								/** --- websend --- **/
-								$data_json =  json_encode(['coin_name'=>$data_json_deposits[$i]['coin'],'txid'=>$data_json_deposits[$i]['txid'],'confirmations'=>$data_json_deposits[$i]['confirmations'],'address'=>$data_json_deposits[$i]['address'],'userid'=>$userid_d,'username'=>$username_d,'status'=>'update']);
-								echo $data_json;
-								$status =  $this->posting($api_url,$api_key,$broker_replacer[$broker_username],$data_json);
-								if($status == false){
-									//print_r($status);
-									$update_status = $this->deposit->where(['coin_id'=>$coin_exist[0]->id,'broker_id'=>$data_json_deposits[$i]['broker_id'],'txid'=>$data_json_deposits[$i]['txid'],'address'=>$data_json_deposits[$i]['address']])->update(['status_update'=>-1]);
-								}
-								else{
-									//print_r($status);
-									$update_status = $this->deposit->where(['coin_id'=>$coin_exist[0]->id,'broker_id'=>$data_json_deposits[$i]['broker_id'],'txid'=>$data_json_deposits[$i]['txid'],'address'=>$data_json_deposits[$i]['address']])->update(['status_update'=>1]);
-								}
-									/** --- websend --- **/
-							}
-						}
+						// else{
+						// 	$updated = $this->deposit->where(['coin_id'=>$coin_exist[0]->id,'broker_id'=>$data_json_deposits[$i]['broker_id'],'txid'=>$data_json_deposits[$i]['txid'],'address'=>$data_json_deposits[$i]['address']])->update(['confirmations'=>$data_json_deposits[$i]['confirmations']]);
+						// 	if(!$updated){
+						// 		echo "error";
+						// 	}
+						// 	else{	
+						// 		/** --- websend --- **/
+						// 		$data_json =  json_encode(['coin_name'=>$data_json_deposits[$i]['coin'],'txid'=>$data_json_deposits[$i]['txid'],'confirmations'=>$data_json_deposits[$i]['confirmations'],'address'=>$data_json_deposits[$i]['address'],'userid'=>$userid_d,'username'=>$username_d,'status'=>'update']);
+						// 		echo $data_json;
+						// 		$status =  $this->posting($api_url,$api_key,$broker_replacer[$broker_username],$data_json);
+						// 		if($status == false){
+						// 			//print_r($status);
+						// 			$update_status = $this->deposit->where(['coin_id'=>$coin_exist[0]->id,'broker_id'=>$data_json_deposits[$i]['broker_id'],'txid'=>$data_json_deposits[$i]['txid'],'address'=>$data_json_deposits[$i]['address']])->update(['status_update'=>-1]);
+						// 		}
+						// 		else{
+						// 			//print_r($status);
+						// 			$update_status = $this->deposit->where(['coin_id'=>$coin_exist[0]->id,'broker_id'=>$data_json_deposits[$i]['broker_id'],'txid'=>$data_json_deposits[$i]['txid'],'address'=>$data_json_deposits[$i]['address']])->update(['status_update'=>1]);
+						// 		}
+						// 			/** --- websend --- **/
+						// 	}
+						// }
 						/*-- Update Tx End--*/
 					}
 				}
