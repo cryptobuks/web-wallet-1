@@ -17,6 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::post('register', 'Api\AuthController@register');
 Route::post('login', 'Api\AuthController@login');
+Route::post('check_kmd','Api\Depositscontroller@deposits_controller_kmd');
 
 Route::group(['middleware' => ['jwt.auth']], function() {
 	Route::get('logout', 'Api\AuthController@logout');

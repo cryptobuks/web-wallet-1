@@ -60,50 +60,12 @@ class Depositscontroller extends Controller
 									}	
 								}
 								if(isset($post_data) && is_array($post_data)){
-									//return response()->json($post_data);
-									//$add_block = $this->block_hash->where(['broker_id'=>2,'coin'=>'LTC(t)'])->update(['blockhash' =>$txs['data']['lastblock']]);
-									$send = new Curl();
-									$send->setHeader('Content-Type', 'application/json');
-									$send->setHeader('Accept', 'application/json');
-									$send->post('https://sys.pixiubit.com/api/receive_deposits', array(
-										'coin' =>'BTC',
-										'coinid'=>1,
-										'broker_id'=>2,
-										'api_key'=>md5('access_send_deposits_2'),
-										'data_deposits'=>json_encode($post_data)
-									));
-									if($send->error){
-										print_r($send);
-										return response()->json(["d1"=>json_encode($send)]);
-										$send1 = new Curl();
-										$send1->setHeader('Content-Type', 'application/json');
-										$send1->setHeader('Accept', 'application/json');
-										$send1->post('https://sys.pixiubit.com/api/receive_deposits', array(
-											'coin' =>'BTC',
-											'coinid'=>1,
-											'broker_id'=>2,
-											'api_key'=>md5('access_send_deposits_2'),
-											'data_deposits'=>json_encode($post_data)
-										));
-										if($send1->error){
-											print_r($send1);
-											return response()->json(["d"=>json_encode($send1)]);
-										}
-										else{
-											print_r($send1);
-											$add_block = $this->block_hash->where(['broker_id'=>2,'coin'=>'BTC'])->update(['blockhash' =>$txs['data']['lastblock']]);
-											return response()->json(["d"=>json_encode($send1)]);
-										}
-									}
-									else{
-										print_r($send);
-										$add_block = $this->block_hash->where(['broker_id'=>2,'coin'=>'BTC'])->update(['blockhash' =>$txs['data']['lastblock']]);
-										return response()->json(["d"=>json_encode($send)]);
-									}
+									$add_block = $this->block_hash->where(['coin'=>'KMD'])->update(['blockhash' =>$txs['data']['lastblock']]);
+									return response()->json(['success'=>true,'data'=>$post_data])
 								}
 								else{
-									$add_block = $this->block_hash->where(['broker_id'=>2,'coin'=>'BTC'])->update(['blockhash' =>$txs['data']['lastblock']]);
-										return response()->json(["success"=>true,"result"=>$add_block]);
+									$add_block = $this->block_hash->where(['coin'=>'KMD'])->update(['blockhash' =>$txs['data']['lastblock']]);
+									return response()->json(["success"=>true,"result"=>$add_block]);
 								}
 							}	
 						}
