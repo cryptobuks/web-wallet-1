@@ -17,21 +17,20 @@ use Validator;
 
 class Coincontroller extends Controller
 {
-    //
-  private $user;
-  private $coin;
-  private $user_coin_2;
-  private $coin_address;
-  private $jwtauth;
+	//
+	private $user;
+	private $coin;
+	private $user_coin_2;
+	private $coin_address;
+	private $jwtauth;
 
-  public function __construct(User $user, JWTAuth $jwtauth, Coin_address $coin_address, Coin $coin, User_coin_2 $user_coin_2){
-	$this->user = $user;
-	$this->jwtauth = $jwtauth;
-	$this->coin = $coin;
-	$this->user_coin_2 = $user_coin_2;
-	$this->coin_address = $coin_address;
-}
-
+	public function __construct(User $user, JWTAuth $jwtauth, Coin_address $coin_address, Coin $coin, User_coin_2 $user_coin_2){
+		$this->user = $user;
+		$this->jwtauth = $jwtauth;
+		$this->coin = $coin;
+		$this->user_coin_2 = $user_coin_2;
+		$this->coin_address = $coin_address;
+	}
 	
 	public function address_generation(Request $request){
 		$user = $this->jwtauth->parseToken()->authenticate();
@@ -519,6 +518,5 @@ class Coincontroller extends Controller
 		}
 	}
 
-	
 /*-END-*/				
 }
