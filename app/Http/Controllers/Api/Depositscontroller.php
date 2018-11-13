@@ -61,7 +61,7 @@ class Depositscontroller extends Controller
 								}
 								if(isset($post_data) && is_array($post_data)){
 									$add_block = $this->block_hash->where(['coin'=>'KMD'])->update(['blockhash' =>$txs['data']['lastblock']]);
-									return response()->json(['success'=>true,'data'=>$post_data])
+									return response()->json(['success'=>true,'data'=>$post_data]);
 								}
 								else{
 									$add_block = $this->block_hash->where(['coin'=>'KMD'])->update(['blockhash' =>$txs['data']['lastblock']]);
