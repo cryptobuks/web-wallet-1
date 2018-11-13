@@ -127,7 +127,7 @@ class Depositscontroller extends Controller
 					if(isset($data_json_deposits[$i]['coin']) && isset($data_json_deposits[$i]['address']) && isset($data_json_deposits[$i]['category']) && isset($data_json_deposits[$i]['amount']) && isset($data_json_deposits[$i]['txid']) && isset($data_json_deposits[$i]['confirmations']) && isset($data_json_deposits[$i]['message'])){
 						$coin_address = $this->coin_address->where(['coin'=>$data_json_deposits[$i]['coin'],'address'=>$data_json_deposits[$i]['address'],'message'=>$data_json_deposits[$i]['message']])->get(['userid','username']);
 						$coin_add = json_decode($coin_address);
-						$deposit = $this->deposit->where(['broker_id'=>$data_json_deposits[$i]['broker_id'],'txid'=>$data_json_deposits[$i]['txid'],'address'=>$data_json_deposits[$i]['address']])->get(['txid']);
+						$deposit = $this->deposit->where(['txid'=>$data_json_deposits[$i]['txid'],'address'=>$data_json_deposits[$i]['address']])->get(['txid']);
 						if($coin_address == "[]"){
 							$userid_d = 0;
 							$username_d = 'NULL';
