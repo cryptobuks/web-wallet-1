@@ -21,7 +21,7 @@ class Depositscontroller extends Controller
 	private $user;
 	private $coin;
 	private $coin_address;
-	private $deposit
+	private $deposit;
 	private $block_hash;
 	private $jwtauth;
 
