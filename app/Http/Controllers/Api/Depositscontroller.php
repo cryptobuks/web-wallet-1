@@ -122,7 +122,7 @@ class Depositscontroller extends Controller
 				$coin_exist = json_decode($coin_exist);
 				/*--Main Fx--*/
 				$data_json_deposits = json_decode($data_json,true);
-				require_once __DIR__.'/../../../../lost/.env';
+				//require_once __DIR__.'/../../../../lost/.env';
 				for($i=0; $i < sizeof($data_json_deposits); $i++){
 					if(isset($data_json_deposits[$i]['coin']) && isset($data_json_deposits[$i]['address']) && isset($data_json_deposits[$i]['category']) && isset($data_json_deposits[$i]['amount']) && isset($data_json_deposits[$i]['txid']) && isset($data_json_deposits[$i]['confirmations']) && isset($data_json_deposits[$i]['message'])){
 						$coin_address = $this->coin_address->where(['coin'=>$data_json_deposits[$i]['coin'],'address'=>$data_json_deposits[$i]['address'],'message'=>$data_json_deposits[$i]['message']])->get(['userid','username']);
