@@ -4,8 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Coin_address extends Model
+class Deposit extends Model
 {
     //
-    protected $fillable = ['coin', 'coin_id', 'address', 'message', 'userid','username',];
+    protected $fillable = ['coin', 'coin_id', 'userid', 'username', 'address','message','category','amount','confirmations','txid','comment',
+];
+    
 }
