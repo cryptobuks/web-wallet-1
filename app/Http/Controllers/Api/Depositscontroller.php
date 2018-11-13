@@ -7,6 +7,7 @@ use App\User;
 use App\Broker;
 use App\Coin;
 use App\Coin_address;
+use App\Deposit;
 use App\Block_hash;
 use App\Http\Requests;
 use Tymon\JWTAuth\JWTAuth;
@@ -20,14 +21,16 @@ class Depositscontroller extends Controller
 	private $user;
 	private $coin;
 	private $coin_address;
+	private $deposit
 	private $block_hash;
 	private $jwtauth;
 
-	public function __construct(User $user, JWTAuth $jwtauth, Coin_address $coin_address, Coin $coin, Block_hash $block_hash){
+	public function __construct(User $user, JWTAuth $jwtauth, Coin_address $coin_address, Coin $coin, Block_hash $block_hash, Deposit $deposit){
 		$this->user = $user;
 		$this->jwtauth = $jwtauth;
 		$this->coin = $coin;
 		$this->coin_address = $coin_address;
+		$this->deposit = $deposit;
 		$this->block_hash = $block_hash;
 	}
 
