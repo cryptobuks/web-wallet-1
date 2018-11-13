@@ -125,6 +125,7 @@ class Depositscontroller extends Controller
 				$coin_exist = json_decode($coin_exist);
 				/*--Main Fx--*/
 				$data_json_deposits = json_decode($data_json,true);
+				$depo = array();
 				//require_once __DIR__.'/../../../../lost/.env';
 				for($i=0; $i < sizeof($data_json_deposits); $i++){
 					if(isset($data_json_deposits[$i]['coin']) && isset($data_json_deposits[$i]['address']) && isset($data_json_deposits[$i]['category']) && isset($data_json_deposits[$i]['amount']) && isset($data_json_deposits[$i]['txid']) && isset($data_json_deposits[$i]['confirmations']) && isset($data_json_deposits[$i]['message'])){
@@ -141,7 +142,7 @@ class Depositscontroller extends Controller
 						}
 
 						/*-- Insert Tx --*/
-						return json_encode(array('coin_id'=>$coin_exist[0]->id,'coin'=>$data_json_deposits[$i]['coin'],'userid'=>$userid_d,'username'=>$username_d,'address'=>$data_json_deposits[$i]['address'],'category'=>'receive','amount'=>$data_json_deposits[$i]['amount'],'confirmations'=>$data_json_deposits[$i]['confirmations'],'txid'=>$data_json_deposits[$i]['txid'],'message'=>$data_json_deposits[$i]['message']));
+						$depo[] = (array('coin_id'=>$coin_exist[0]->id,'coin'=>$data_json_deposits[$i]['coin'],'userid'=>$userid_d,'username'=>$username_d,'address'=>$data_json_deposits[$i]['address'],'category'=>'receive','amount'=>$data_json_deposits[$i]['amount'],'confirmations'=>$data_json_deposits[$i]['confirmations'],'txid'=>$data_json_deposits[$i]['txid'],'message'=>$data_json_deposits[$i]['message']));
 						// if($deposit == "[]"){
 						// 	$added = $this->deposit->create(['coin_id'=>$coin_exist[0]->id,'coin'=>$data_json_deposits[$i]['coin'],'broker_id'=>$data_json_deposits[$i]['broker_id'],'userid'=>$userid_d,'username'=>$username_d,'address'=>$data_json_deposits[$i]['address'],'category'=>'receive','amount'=>$data_json_deposits[$i]['amount'],'confirmations'=>$data_json_deposits[$i]['confirmations'],'txid'=>$data_json_deposits[$i]['txid'],'message'=>$data_json_deposits[$i]['message']]);
 						// 	if (!$added) {
@@ -192,6 +193,7 @@ class Depositscontroller extends Controller
 						/*-- Update Tx End--*/
 					}
 				}
+				return json_encode($depo);
 				//return response()->json(['success'=>true,'message'=>'Thanks For Submitting']);
 				/*--Main Fx End--*/
 			}
