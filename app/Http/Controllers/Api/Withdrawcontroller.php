@@ -176,4 +176,37 @@ class Withdrawcontroller extends Controller
 		}
 	}
 
+	public function withdraw_auto($coin,$coin_id,$amount,$address,$message,$token,$api,$fees){
+		$send_url = $api.'coin_sender_'.$broker_id;
+		$sendit = new Curl();
+  $auth_token = $token;
+  $sendit->setHeader('Content-Type','application/json');
+  $sendit->setHeader('Accept','application/json');
+  $sendit->setHeader("Authorization",$auth_token);
+  $sendit->post($send_url, array(
+    'api_key'=>md5('affan'),
+    'coin'=>$coin,
+    'coin_id'=>$coin_id,
+    'address'=>$address,
+    'amount'=>$amount/100000000,
+    'fees'=>$fees/100000000,
+    'message'=>$message
+  ));
+  if($sendit->error){
+    //print_r($sendit);
+    return response()->json(['success'=> false, 'message'=> 'Network Error']);
+  }
+  else{
+    $check = ($sendit->response);
+    if(isset($check->success)){
+      if($check->success == true){
+        return response()->json(['success'=>true,'data'=>$check->txid]);
+      }
+    }
+    else{
+      return response()->json(['success'=>false,'message'=>"Request Failed".json_encode($check)]);
+    }
+  }
+}
+
 }
