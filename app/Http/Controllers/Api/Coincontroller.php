@@ -7,8 +7,8 @@ use App\User;
 use App\Broker;
 use App\Coin;
 use App\Coin_address;
-use App\User_coin_2;
 use App\Users_2;
+use App\User_coin_2;
 use App\Http\Requests;
 use Tymon\JWTAuth\JWTAuth;
 use App\Http\Controllers\Controller;
@@ -26,7 +26,7 @@ class Coincontroller extends Controller
 	private $coin_address;
 	private $jwtauth;
 
-	public function __construct(User $user, JWTAuth $jwtauth, Coin_address $coin_address, Coin $coin, User_coin_2 $user_coin_2, Users_2 $users_2){
+	public function __construct(User $user, Users_2 $users_2, JWTAuth $jwtauth, Coin_address $coin_address, Coin $coin, User_coin_2 $user_coin_2){
 		$this->user = $user;
 		$this->jwtauth = $jwtauth;
 		$this->coin = $coin;
