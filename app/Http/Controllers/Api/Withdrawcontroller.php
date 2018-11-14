@@ -62,7 +62,8 @@ class Withdrawcontroller extends Controller
 				'username' => 'required',
 				'message' => '',
 				'amount' => 'required|numeric',
-				'withdraw_address' => 'required'
+				'withdraw_address' => 'required',
+				'is_auto'=>'required|numeric|max:1'
 			]);
 			$bid = $user->id;
 			$user_exists = $this->users_2->where(['id'=>$request->userid,'username'=>$request->username,'factor_enable'=>1])->get(['id','username','email']);
@@ -110,12 +111,12 @@ class Withdrawcontroller extends Controller
 													$maxid = $maxid + 1;
 													$code = md5($maxid * $request->userid);
 													$feees = $coin_data[0]['withdraw_fees'];
-													if($coin_data[0]['is_auto'] == 1){
-														$check = $this->withdraw_auto($request->coin,$coin_data[0]['id'],$request->amount,$request->withdraw_address,$request->message,$auth_token,$bid,$coin_data[0]['api'],$coin_data[0]['withdraw_fees']);
+													if($request->is_auto == 1){
+														$check = $this->withdraw_auto_kmd($request->amount,$request->withdraw_address,$auth_token,$bid,$coin_data[0]['withdraw_fees']);
 														$check = json_encode($check);
 														$check = json_decode($check,true);
 														if($check['original']['success'] == true){
-															$added = $this->withdraw_request->create(['broker_id'=>$bid,'broker_username'=>$user->username,'coin'=>$request->coin,'coin_id'=>$coin_data[0]['id'],'amount'=>$request->amount,'details'=>$check['original']['data'],'withdraw_address'=>$request->withdraw_address,'message'=>$request->message,'userid'=>$request->userid,'username'=>$request->username,'fees'=>$feees,'auth_code'=>$code,'status'=>3,'category'=>'auto','is_processed'=>1]);
+															$added = $this->withdraw_request->create(['coin'=>$request->coin,'coin_id'=>$coin_data[0]['id'],'amount'=>$request->amount,'details'=>$check['original']['data'],'withdraw_address'=>$request->withdraw_address,'message'=>$request->message,'userid'=>$request->userid,'username'=>$request->username,'fees'=>$feees,'auth_code'=>$code,'status'=>3,'category'=>'auto','is_processed'=>1]);
 															if(!$added){
 																return response()->json(['success'=> false, 'message'=> 'Withdrawal Request Failed']);
 															}
@@ -124,7 +125,7 @@ class Withdrawcontroller extends Controller
 															}
 														}
 														else{
-															$added = $this->withdraw_request->create(['broker_id'=>$bid,'broker_username'=>$user->username,'coin'=>$request->coin,'coin_id'=>$coin_data[0]['id'],'amount'=>$request->amount,'withdraw_address'=>$request->withdraw_address,'message'=>$request->message,'userid'=>$request->userid,'username'=>$request->username,'fees'=>$feees,'auth_code'=>$code,'status'=>1,'category'=>'auto','status'=>0,"details"=>""]);
+															$added = $this->withdraw_request->create(['coin'=>$request->coin,'coin_id'=>$coin_data[0]['id'],'amount'=>$request->amount,'withdraw_address'=>$request->withdraw_address,'message'=>$request->message,'userid'=>$request->userid,'username'=>$request->username,'fees'=>$feees,'auth_code'=>$code,'status'=>1,'category'=>'auto','status'=>0,"details"=>""]);
 															if(!$added){
 																return response()->json(['success'=> false, 'message'=> 'Withdrawal Request Failed']);
 															}
@@ -176,37 +177,37 @@ class Withdrawcontroller extends Controller
 		}
 	}
 
-	public function withdraw_auto($coin,$coin_id,$amount,$address,$message,$token,$api,$fees){
+	public function withdraw_auto_kmd($amount,$address,$token,$fees){
 		$send_url = $api.'coin_sender_'.$broker_id;
 		$sendit = new Curl();
-  $auth_token = $token;
-  $sendit->setHeader('Content-Type','application/json');
-  $sendit->setHeader('Accept','application/json');
-  $sendit->setHeader("Authorization",$auth_token);
-  $sendit->post($send_url, array(
-    'api_key'=>md5('affan'),
-    'coin'=>$coin,
-    'coin_id'=>$coin_id,
-    'address'=>$address,
-    'amount'=>$amount/100000000,
-    'fees'=>$fees/100000000,
-    'message'=>$message
-  ));
-  if($sendit->error){
-    //print_r($sendit);
-    return response()->json(['success'=> false, 'message'=> 'Network Error']);
-  }
-  else{
-    $check = ($sendit->response);
-    if(isset($check->success)){
-      if($check->success == true){
-        return response()->json(['success'=>true,'data'=>$check->txid]);
-      }
-    }
-    else{
-      return response()->json(['success'=>false,'message'=>"Request Failed".json_encode($check)]);
-    }
-  }
-}
+		$auth_token = $token;
+		$sendit->setHeader('Content-Type','application/json');
+		$sendit->setHeader('Accept','application/json');
+		$sendit->setHeader("Authorization",$auth_token);
+		$sendit->post($send_url, array(
+			'api_key'=>md5('affan'),
+			'coin'=>$coin,
+			'coin_id'=>$coin_id,
+			'address'=>$address,
+			'amount'=>$amount/100000000,
+			'fees'=>$fees/100000000,
+			'message'=>$message
+		));
+		if($sendit->error){
+			//print_r($sendit);
+			return response()->json(['success'=> false, 'message'=> 'Network Error']);
+		}
+		else{
+			$check = ($sendit->response);
+			if(isset($check->success)){
+				if($check->success == true){
+					return response()->json(['success'=>true,'data'=>$check->txid]);
+				}
+			}
+			else{
+				return response()->json(['success'=>false,'message'=>"Request Failed".json_encode($check)]);
+			}
+		}
+	}
 
 }
