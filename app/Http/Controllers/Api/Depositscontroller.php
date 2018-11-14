@@ -143,16 +143,24 @@ class Depositscontroller extends Controller
 
 						/*-- Insert Tx --*/
 						if($deposit == "[]"){
+							$added = $this->deposit->create(['coin_id'=>$coin_exist[0]->id,'coin'=>$data_json_deposits[$i]['coin'],'userid'=>$userid_d,'username'=>$username_d,'address'=>$data_json_deposits[$i]['address'],'category'=>'receive','amount'=>$data_json_deposits[$i]['amount'],'confirmations'=>$data_json_deposits[$i]['confirmations'],'txid'=>$data_json_deposits[$i]['txid'],'message'=>$data_json_deposits[$i]['message']]);
+							if (!$added) {
+								echo 'error';
+							}
 							/** --- websend --- **/
-							$depo[] = array('coin_id'=>$coin_exist[0]->id,'coin'=>$data_json_deposits[$i]['coin'],'userid'=>$userid_d,'username'=>$username_d,'address'=>$data_json_deposits[$i]['address'],'category'=>'receive','amount'=>$data_json_deposits[$i]['amount'],'confirmations'=>$data_json_deposits[$i]['confirmations'],'txid'=>$data_json_deposits[$i]['txid'],'message'=>$data_json_deposits[$i]['message'],'status'=>'new');
+							$depo[] = array('status'=>'new','userid'=>$userid_d,'username'=>$username_d,'coin'=>$data_json_deposits[$i]['coin'],'category'=>'receive','amount'=>$data_json_deposits[$i]['amount'],'txid'=>$data_json_deposits[$i]['txid'],'confirmations'=>$data_json_deposits[$i]['confirmations'],'message'=>$data_json_deposits[$i]['message'],'to'=>$data_json_deposits[$i]['address']);
 							/** --- websend --- **/
 						}
 						/*-- Insert Tx End--*/
 
 						/*-- Update Tx --*/
 						else{
+							$updated = $this->deposit->where(['coin_id'=>$coin_exist[0]->id,'txid'=>$data_json_deposits[$i]['txid'],'address'=>$data_json_deposits[$i]['address']])->update(['confirmations'=>$data_json_deposits[$i]['confirmations']]);
+							if(!$updated){
+								echo "error";
+							}
 							/** --- websend --- **/
-							$depo[] =  array('coin_name'=>$data_json_deposits[$i]['coin'],'txid'=>$data_json_deposits[$i]['txid'],'confirmations'=>$data_json_deposits[$i]['confirmations'],'address'=>$data_json_deposits[$i]['address'],'userid'=>$userid_d,'username'=>$username_d,'status'=>'update');
+							$depo[] =  array('status'=>'update','userid'=>$userid_d,'username'=>$username_d,'coin_name'=>$data_json_deposits[$i]['coin'],'txid'=>$data_json_deposits[$i]['txid'],'confirmations'=>$data_json_deposits[$i]['confirmations']);
 									/** --- websend --- **/
 						}
 						/*-- Update Tx End--*/
