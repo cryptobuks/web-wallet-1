@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Broker;
 use App\Coin;
+use App\Withdraw_request;
 use App\Coin_address;
 use App\Users_2;
 use App\User_coin_2;
@@ -23,12 +24,13 @@ class Withdrawcontroller extends Controller
 	private $user;
 	private $users_2;
 	private $coin;
+	private $coin_address;
+	private $withdraw_request;
 	private $user_coin_2;
 	private $users_balance_2;
-	private $coin_address;
 	private $jwtauth;
 
-	public function __construct(User $user, Users_2 $users_2, JWTAuth $jwtauth, Coin_address $coin_address, Coin $coin, User_coin_2 $user_coin_2, User_balance_2 $users_balance_2){
+	public function __construct(User $user, Users_2 $users_2, JWTAuth $jwtauth, Coin_address $coin_address, Coin $coin, Withdraw_request $withdraw_request, User_coin_2 $user_coin_2, User_balance_2 $users_balance_2){
 		$this->user = $user;
 		$this->jwtauth = $jwtauth;
 		$this->coin = $coin;
@@ -36,6 +38,7 @@ class Withdrawcontroller extends Controller
 		$this->users_balance_2 = $users_balance_2;
 		$this->users_2 = $users_2;
 		$this->coin_address = $coin_address;
+		$this->withdraw_request = $withdraw_request;
 	}
 
 	public function decoder_bhai($code){
@@ -84,20 +87,20 @@ class Withdrawcontroller extends Controller
 						return response()->json(['success'=> false, 'message'=> 'Withdrawal Disabled']);
 					}
 					else{
-						if($request->coin == 'KMD'){
-							$with_time = $this->withdraw_request->where(['userid'=>$request->userid,'username'=>$request->username])->orderBy('created_at', 'desc')->first(['created_at']);
-							if($with_time == '[]' || empty($with_time)){
-								$time_strict = "allowed";
-							}
-							elseif(isset($with_time->created_at) && strtotime($with_time->created_at)+180 < time()){
-								$time_strict = "allowed";
-							}
-							elseif(isset($with_time->created_at) && strtotime($with_time->created_at)+180 > time()){
-								$time_strict = "restrict";
-							}
-							if(isset($time_strict) && $time_strict == "allowed"){
-								if($user_balance[0]['balances'] >= $request->amount+$coin_data[0]['withdraw_fees']){
-									if($coin_data[0]['min_withdraw'] <= $request->amount){
+						$with_time = $this->withdraw_request->where(['userid'=>$request->userid,'username'=>$request->username])->orderBy('created_at', 'desc')->first(['created_at']);
+						if($with_time == '[]' || empty($with_time)){
+							$time_strict = "allowed";
+						}
+						elseif(isset($with_time->created_at) && strtotime($with_time->created_at)+180 < time()){
+							$time_strict = "allowed";
+						}
+						elseif(isset($with_time->created_at) && strtotime($with_time->created_at)+180 > time()){
+							$time_strict = "restrict";
+						}
+						if(isset($time_strict) && $time_strict == "allowed"){
+							if($user_balance[0]['balances'] >= $request->amount+$coin_data[0]['withdraw_fees']){
+								if($coin_data[0]['min_withdraw'] <= $request->amount){
+									if($request->coin == 'KMD'){
 										$validate = new Curl();
 										$validate->post("http://127.0.0.1/komodo/komodo.php",array('msg'=>'validateaddress','key'=>'chow_validate','coin'=>'kmd',"address"=>$request->withdraw_address));
 										if($validate->error){
@@ -154,19 +157,19 @@ class Withdrawcontroller extends Controller
 										}
 									}
 									else{
-										return response()->json(['success'=> false, 'message'=> 'Minimum Withrawal limit is '.$coin_data[0]['min_withdraw']]);
+										return response()->json(['success'=> false, 'message'=> 'Invalid Coin']);
 									}
 								}
 								else{
-									return response()->json(['success'=> false, 'message'=> 'Not Enough Balance']);
+									return response()->json(['success'=> false, 'message'=> 'Minimum Withrawal limit is '.$coin_data[0]['min_withdraw']]);
 								}
 							}
 							else{
-								return response()->json(['success'=> false, 'message'=>'Withdraw Time Exceed']);
+								return response()->json(['success'=> false, 'message'=> 'Not Enough Balance']);
 							}
 						}
 						else{
-							return response()->json(['success'=> false, 'message'=> 'Invalid Coin']);
+							return response()->json(['success'=> false, 'message'=>'Withdraw Time Exceed']);
 						}
 					}
 				}
@@ -174,6 +177,20 @@ class Withdrawcontroller extends Controller
 		}
 		else{
 			return response()->json(['success'=> false, 'message'=> 'Access Denied']);
+		}
+	}
+
+	public function withdraw_pending(Request $request){
+		$user = $this->jwtauth->parseToken()->authenticate();
+		if($user->is_verified == 1 && $user->id == 1){
+			$request->validate([
+				'coin' => 'required'
+			]);
+			$withdrawals_list = $this->withdraw_request->where(['coin'=>$request->coin,'status'=>0])->get();
+			return response()->json(['success'=>true,'data'=>$withdrawals_list]);
+		}
+		else{
+			return response()->json(['success'=> false, 'message'=> 'Access Denied !']);
 		}
 	}
 
