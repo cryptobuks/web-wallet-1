@@ -147,9 +147,11 @@ class Depositscontroller extends Controller
 							if (!$added) {
 								echo 'error';
 							}
-							/** --- websend --- **/
-							$depo[] = array('status'=>'new','userid'=>$userid_d,'username'=>$username_d,'coin'=>$data_json_deposits[$i]['coin'],'category'=>'receive','amount'=>$data_json_deposits[$i]['amount'],'txid'=>$data_json_deposits[$i]['txid'],'confirmations'=>$data_json_deposits[$i]['confirmations'],'message'=>$data_json_deposits[$i]['message'],'to'=>$data_json_deposits[$i]['address']);
-							/** --- websend --- **/
+							else{
+								/** --- websend --- **/
+								$depo[] = array('status'=>'new','userid'=>$userid_d,'username'=>$username_d,'coin'=>$data_json_deposits[$i]['coin'],'category'=>'receive','amount'=>$data_json_deposits[$i]['amount'],'txid'=>$data_json_deposits[$i]['txid'],'confirmations'=>$data_json_deposits[$i]['confirmations'],'message'=>$data_json_deposits[$i]['message'],'to'=>$data_json_deposits[$i]['address']);
+								/** --- websend --- **/
+							}
 						}
 						/*-- Insert Tx End--*/
 
@@ -159,14 +161,16 @@ class Depositscontroller extends Controller
 							if(!$updated){
 								echo "error";
 							}
-							/** --- websend --- **/
-							$depo[] =  array('status'=>'update','userid'=>$userid_d,'username'=>$username_d,'coin_name'=>$data_json_deposits[$i]['coin'],'txid'=>$data_json_deposits[$i]['txid'],'confirmations'=>$data_json_deposits[$i]['confirmations']);
-									/** --- websend --- **/
+							else{
+								/** --- websend --- **/
+								$depo[] =  array('status'=>'update','userid'=>$userid_d,'username'=>$username_d,'coin_name'=>$data_json_deposits[$i]['coin'],'txid'=>$data_json_deposits[$i]['txid'],'confirmations'=>$data_json_deposits[$i]['confirmations']);
+								/** --- websend --- **/
+							}
 						}
 						/*-- Update Tx End--*/
 					}
 				}
-				return json_encode($depo);
+				return ($depo);
 				//return response()->json(['success'=>true,'message'=>'Thanks For Submitting']);
 				/*--Main Fx End--*/
 			}
